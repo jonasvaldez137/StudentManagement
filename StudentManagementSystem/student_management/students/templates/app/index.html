@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .nav-tab:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .student-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .student-card {
+            background: linear-gradient(135deg, #f8f9ff, #ffffff);
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .subject-card {
+            background: linear-gradient(135deg, #fff5f5, #ffffff);
+            border-left: 5px solid #764ba2;
+        }
+
+        .grades-section {
+            margin-top: 20px;
+        }
+
+        .grade-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .grade-info {
+            flex: 1;
+        }
+
+        .grade-score {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .student-info {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Student Management System</h1>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('students')">Students</button>
+            <button class="nav-tab" onclick="showTab('subjects')">Subjects</button>
+            <button class="nav-tab" onclick="showTab('enrollments')">Enrollments</button>
+        </div>
+
+
+        <div id="students" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Student</h2>
+                    <button class="btn btn-primary" onclick="openStudentModal()">Add New Student</button>
+                </div>
+                <div id="students-list" class="student-list">
+                    <div class="loading">Loading students...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="subjects" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Subject</h2>
+                    <button class="btn btn-primary" onclick="openSubjectModal()">Add New Subject</button>
+                </div>
+                <div id="subjects-list">
+                    <div class="loading">Loading subjects...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="enrollments" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Enrollment</h2>
+                    <button class="btn btn-primary" onclick="openEnrollmentModal()">Add New Enrollment</button>
+                </div>
+                <div id="enrollments-list">
+                    <div class="loading">Loading enrollments...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('studentModal')">&times;</span>
+            <h2 id="studentModalTitle">Add New Student</h2>
+            <form id="studentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name:</label>
+                        <input type="text" id="firstName" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" id="lastName" name="last_name" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentId">Student ID:</label>
+                        <input type="text" id="studentId" name="student_id" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth:</label>
+                        <input type="date" id="dateOfBirth" name="date_of_birth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number:</label>
+                        <input type="tel" id="phoneNumber" name="phone_number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address:</label>
+                    <textarea id="address" name="address" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Student</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal('studentModal')">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="subjectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('subjectModal')">&times;</span>
+            <h2>Add New Subject</h2>
+            <form id="subjectForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="subjectName">Subject Name:</label>
+                        <input type="text" id="subjectName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subjectCode">Subject Code:</label>
+                        <input type="text" id="subjectCode" name="code" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="credits">Credits:</label>
+                    <input type="number" id="credits" name="credits" value="3" min="1" max="6">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Subject</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal('subjectModal')">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="enrollmentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('enrollmentModal')">&times;</span>
+            <h2>Add New Enrollment</h2>
+            <form id="enrollmentForm">
+                <div class="form-group">
+                    <label for="enrollmentStudent">Student:</label>
+                    <select id="enrollmentStudent" name="student" required>
+                        <option value="">Select a student...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="enrollmentSubject">Subject:</label>
+                    <select id="enrollmentSubject" name="subject" required>
+                        <option value="">Select a subject...</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Enroll Student</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal('enrollmentModal')">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="gradeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('gradeModal')">&times;</span>
+            <h2>Add/Edit Grade</h2>
+            <form id="gradeForm">
+                <input type="hidden" id="gradeEnrollment" name="enrollment">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gradeType">Grade Type:</label>
+                        <select id="gradeType" name="grade_type" required>
+                            <option value="activity">Activity</option>
+                            <option value="quiz">Quiz</option>
+                            <option value="exam">Exam</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="gradeName">Grade Name:</label>
+                        <input type="text" id="gradeName" name="name" required placeholder="e.g., Quiz 1, Midterm Exam">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="score">Score:</label>
+                        <input type="number" id="score" name="score" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="maxScore">Max Score:</label>
+                        <input type="number" id="maxScore" name="max_score" step="0.01" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Grade</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal('gradeModal')">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+        let currentStudentId = null;
+        let currentGradeId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStudents();
+            loadSubjects();
+            loadEnrollments();
+            setupForms();
+        });
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'students') loadStudents();
+            else if (tabName === 'subjects') loadSubjects();
+            else if (tabName === 'enrollments') loadEnrollments();
+        }
+
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('API call failed:', error);
+                showError('Failed to connect to server. Please make sure the Django backend is running.');
+                throw error;
+            }
+        }
+
+        async function loadStudents() {
+            try {
+                const students = await apiCall('/students/');
+                displayStudents(students);
+            } catch (error) {
+                document.getElementById('students-list').innerHTML = '<div class="error">Failed to load students</div>';
+            }
+        }
+
+        function displayStudents(students) {
+            const container = document.getElementById('students-list');
+            if (students.length === 0) {
+                container.innerHTML = '<div class="loading">No students found</div>';
+                return;
+            }
+
+            container.innerHTML = students.map(student => `
+                <div class="student-card card">
+                    <div class="card-header">
+                        <h3 class="card-title">${student.full_name}</h3>
+                        <div>
+                            <button class="btn btn-primary" onclick="viewStudentDetails(${student.id})">View Details</button>
+                            <button class="btn btn-secondary" onclick="editStudent(${student.id})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteStudent(${student.id})">Delete</button>
+                        </div>
+                    </div>
+                    <div class="student-info">
+                        <div><strong>Student ID:</strong> ${student.student_id}</div>
+                        <div><strong>Email:</strong> ${student.email}</div>
+                        <div><strong>Date of Birth:</strong> ${student.date_of_birth}</div>
+                        <div><strong>Phone:</strong> ${student.phone_number || 'N/A'}</div>
+                    </div>
+                    <div><strong>Address:</strong> ${student.address || 'N/A'}</div>
+                </div>
+            `).join('');
+        }
+
+        async function viewStudentDetails(studentId) {
+            try {
+                const student = await apiCall(`/students/${studentId}/detail_with_enrollments/`);
+                displayStudentDetails(student);
+            } catch (error) {
+                showError('Failed to load student details');
+            }
+        }
+
+        function displayStudentDetails(student) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 900px;">
+                    <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+                    <h2>${student.full_name} - Student Details</h2>
+
+                    <div class="card">
+                        <h3>Personal Information</h3>
+                        <div class="student-info">
+                            <div><strong>Student ID:</strong> ${student.student_id}</div>
+                            <div><strong>Email:</strong> ${student.email}</div>
+                            <div><strong>Date of Birth:</strong> ${student.date_of_birth}</div>
+                            <div><strong>Phone:</strong> ${student.phone_number || 'N/A'}</div>
+                        </div>
+                        <div><strong>Address:</strong> ${student.address || 'N/A'}</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Enrolled Subjects</h3>
+                            <button class="btn btn-primary" onclick="openEnrollmentModalForStudent(${student.id})">Add Subject</button>
+                        </div>
+                        <div class="subjects-grid">
+                            ${student.enrollments.map(enrollment => `
+                                <div class="subject-card card">
+                                    <div class="card-header">
+                                        <h4>${enrollment.subject_code} - ${enrollment.subject_name}</h4>
+                                        <div>
+                                            <button class="btn btn-success" onclick="addGrade(${enrollment.id})">Add Grade</button>
+                                            <button class="btn btn-danger" onclick="deleteEnrollment(${enrollment.id})">Remove</button>
+                                        </div>
+                                    </div>
+                                    <div class="grades-section">
+                                        <h5>Grades:</h5>
+                                        ${enrollment.grades.length === 0 ? '<p>No grades recorded</p>' :
+                                            enrollment.grades.map(grade => `
+                                                <div class="grade-item">
+                                                    <div class="grade-info">
+                                                        <strong>${grade.name}</strong> (${grade.grade_type})
+                                                        <br>Score: <span class="grade-score">${grade.score}/${grade.max_score} (${grade.percentage.toFixed(1)}%)</span>
+                                                    </div>
+                                                    <div>
+                                                        <button class="btn btn-secondary" onclick="editGrade(${grade.id})">Edit</button>
+                                                        <button class="btn btn-danger" onclick="deleteGrade(${grade.id})">Delete</button>
+                                                    </div>
+                                                </div>
+                                            `).join('')
+                                        }
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        async function editStudent(studentId) {
+            try {
+                const student = await apiCall(`/students/${studentId}/`);
+                currentStudentId = studentId;
+
+                document.getElementById('firstName').value = student.first_name;
+                document.getElementById('lastName').value = student.last_name;
+                document.getElementById('email').value = student.email;
+                document.getElementById('studentId').value = student.student_id;
+                document.getElementById('dateOfBirth').value = student.date_of_birth;
+                document.getElementById('phoneNumber').value = student.phone_number || '';
+                document.getElementById('address').value = student.address || '';
+
+                document.getElementById('studentModalTitle').textContent = 'Edit Student';
+                document.getElementById('studentModal').style.display = 'block';
+            } catch (error) {
+                showError('Failed to load student data');
+            }
+        }
+
+        async function deleteStudent(studentId) {
+            if (confirm('Are you sure you want to delete this student? This will also remove all enrollments and grades.')) {
+                try {
+                    await apiCall(`/students/${studentId}/`, 'DELETE');
+                    showSuccess('Student deleted successfully');
+                    loadStudents();
+                } catch (error) {
+                    showError('Failed to delete student');
+                }
+            }
+        }
+
+        async function loadSubjects() {
+            try {
+                const subjects = await apiCall('/subjects/');
+                displaySubjects(subjects);
+            } catch (error) {
+                document.getElementById('subjects-list').innerHTML = '<div class="error">Failed to load subjects</div>';
+            }
+        }
+
+        function displaySubjects(subjects) {
+            const container = document.getElementById('subjects-list');
+            if (subjects.length === 0) {
+                container.innerHTML = '<div class="loading">No subjects found</div>';
+                return;
+            }
+
+            container.innerHTML = subjects.map(subject => `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">${subject.code} - ${subject.name}</h3>
+                        <div>
+                            <button class="btn btn-secondary" onclick="editSubject(${subject.id})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteSubject(${subject.id})">Delete</button>
+                        </div>
+                    </div>
+                    <p><strong>Credits:</strong> ${subject.credits}</p>
+                    <p><strong>Description:</strong> ${subject.description || 'No description'}</p>
+                </div>
+            `).join('');
+        }
+
+        async function editSubject(subjectId) {
+            try {
+                const subject = await apiCall(`/subjects/${subjectId}/`);
+
+                document.getElementById('subjectName').value = subject.name;
+                document.getElementById('subjectCode').value = subject.code;
+                document.getElementById('credits').value = subject.credits;
+                document.getElementById('description').value = subject.description || '';
+
+                document.getElementById('subjectForm').dataset.subjectId = subjectId;
+                document.getElementById('subjectModal').style.display = 'block';
+            } catch (error) {
+                showError('Failed to load subject data');
+            }
+        }
+
+        async function deleteSubject(subjectId) {
+            if (confirm('Are you sure you want to delete this subject? This will also remove all related enrollments and grades.')) {
+                try {
+                    await apiCall(`/subjects/${subjectId}/`, 'DELETE');
+                    showSuccess('Subject deleted successfully');
+                    loadSubjects();
+                } catch (error) {
+                    showError('Failed to delete subject');
+                }
+            }
+        }
+
+        async function loadEnrollments() {
+            try {
+                const enrollments = await apiCall('/enrollments/');
+                displayEnrollments(enrollments);
+            } catch (error) {
+                document.getElementById('enrollments-list').innerHTML = '<div class="error">Failed to load enrollments</div>';
+            }
+        }
+
+        function displayEnrollments(enrollments) {
+            const container = document.getElementById('enrollments-list');
+            if (enrollments.length === 0) {
+                container.innerHTML = '<div class="loading">No enrollments found</div>';
+                return;
+            }
+
+            container.innerHTML = enrollments.map(enrollment => `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">${enrollment.student_name} - ${enrollment.subject_code}</h3>
+                        <div>
+                            <button class="btn btn-success" onclick="addGrade(${enrollment.id})">Add Grade</button>
+                            <button class="btn btn-primary" onclick="viewEnrollmentDetails(${enrollment.id})">View Grades</button>
+                            <button class="btn btn-danger" onclick="deleteEnrollment(${enrollment.id})">Delete</button>
+                        </div>
+                    </div>
+                    <p><strong>Subject:</strong> ${enrollment.subject_name}</p>
+                    <p><strong>Enrolled:</strong> ${new Date(enrollment.enrolled_at).toLocaleDateString()}</p>
+                    <p><strong>Grades Count:</strong> ${enrollment.grades.length}</p>
+                </div>
+            `).join('');
+        }
+
+        async function viewEnrollmentDetails(enrollmentId) {
+            try {
+                const enrollment = await apiCall(`/enrollments/${enrollmentId}/`);
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.display = 'block';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+                        <h2>Grades for ${enrollment.student_name} - ${enrollment.subject_code}</h2>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>All Grades</h3>
+                                <button class="btn btn-success" onclick="addGrade(${enrollment.id})">Add Grade</button>
+                            </div>
+                            <div class="grades-section">
+                                ${enrollment.grades.length === 0 ? '<p>No grades recorded</p>' :
+                                    enrollment.grades.map(grade => `
+                                        <div class="grade-item">
+                                            <div class="grade-info">
+                                                <strong>${grade.name}</strong> (${grade.grade_type})
+                                                <br>Score: <span class="grade-score">${grade.score}/${grade.max_score} (${grade.percentage.toFixed(1)}%)</span>
+                                                <br><small>Recorded: ${new Date(grade.date_recorded).toLocaleDateString()}</small>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-secondary" onclick="editGrade(${grade.id})">Edit</button>
+                                                <button class="btn btn-danger" onclick="deleteGrade(${grade.id})">Delete</button>
+                                            </div>
+                                        </div>
+                                    `).join('')
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            } catch (error) {
+                showError('Failed to load enrollment details');
+            }
+        }
+
+        async function deleteEnrollment(enrollmentId) {
+            if (confirm('Are you sure you want to delete this enrollment? This will also remove all related grades.')) {
+                try {
+                    await apiCall(`/enrollments/${enrollmentId}/`, 'DELETE');
+                    showSuccess('Enrollment deleted successfully');
+                    loadEnrollments();
+                } catch (error) {
+                    showError('Failed to delete enrollment');
+                }
+            }
+        }
+
+        function addGrade(enrollmentId) {
+            currentGradeId = null;
+            document.getElementById('gradeEnrollment').value = enrollmentId;
+            document.getElementById('gradeForm').reset();
+            document.getElementById('gradeEnrollment').value = enrollmentId;
+            document.getElementById('gradeModal').style.display = 'block';
+        }
+
+        async function editGrade(gradeId) {
+            try {
+                const grade = await apiCall(`/grades/${gradeId}/`);
+                currentGradeId = gradeId;
+
+                document.getElementById('gradeEnrollment').value = grade.enrollment;
+                document.getElementById('gradeType').value = grade.grade_type;
+                document.getElementById('gradeName').value = grade.name;
+                document.getElementById('score').value = grade.score;
+                document.getElementById('maxScore').value = grade.max_score;
+
+                document.getElementById('gradeModal').style.display = 'block';
+            } catch (error) {
+                showError('Failed to load grade data');
+            }
+        }
+
+        async function deleteGrade(gradeId) {
+            if (confirm('Are you sure you want to delete this grade?')) {
+                try {
+                    await apiCall(`/grades/${gradeId}/`, 'DELETE');
+                    showSuccess('Grade deleted successfully');
+                    // Refresh current view
+                    if (document.querySelector('.modal')) {
+                        document.querySelector('.modal').remove();
+                    }
+                    loadEnrollments();
+                } catch (error) {
+                    showError('Failed to delete grade');
+                }
+            }
+        }
+
+        function openStudentModal() {
+            currentStudentId = null;
+            document.getElementById('studentForm').reset();
+            document.getElementById('studentModalTitle').textContent = 'Add New Student';
+            document.getElementById('studentModal').style.display = 'block';
+        }
+
+        function openSubjectModal() {
+            document.getElementById('subjectForm').reset();
+            delete document.getElementById('subjectForm').dataset.subjectId;
+            document.getElementById('subjectModal').style.display = 'block';
+        }
+
+        async function openEnrollmentModal() {
+            await loadStudentsAndSubjectsForEnrollment();
+            document.getElementById('enrollmentForm').reset();
+            document.getElementById('enrollmentModal').style.display = 'block';
+        }
+
+        async function openEnrollmentModalForStudent(studentId) {
+            await loadStudentsAndSubjectsForEnrollment();
+            document.getElementById('enrollmentStudent').value = studentId;
+            document.getElementById('enrollmentModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        async function loadStudentsAndSubjectsForEnrollment() {
+            try {
+                const [students, subjects] = await Promise.all([
+                    apiCall('/students/'),
+                    apiCall('/subjects/')
+                ]);
+
+                const studentSelect = document.getElementById('enrollmentStudent');
+                const subjectSelect = document.getElementById('enrollmentSubject');
+
+                studentSelect.innerHTML = '<option value="">Select a student...</option>' +
+                    students.map(student => `<option value="${student.id}">${student.full_name} (${student.student_id})</option>`).join('');
+
+                subjectSelect.innerHTML = '<option value="">Select a subject...</option>' +
+                    subjects.map(subject => `<option value="${subject.id}">${subject.code} - ${subject.name}</option>`).join('');
+            } catch (error) {
+                showError('Failed to load students and subjects');
+            }
+        }
+
+        function setupForms() {
+            // Student Form
+            document.getElementById('studentForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    if (currentStudentId) {
+                        await apiCall(`/students/${currentStudentId}/`, 'PUT', data);
+                        showSuccess('Student updated successfully');
+                    } else {
+                        await apiCall('/students/', 'POST', data);
+                        showSuccess('Student created successfully');
+                    }
+                    closeModal('studentModal');
+                    loadStudents();
+                } catch (error) {
+                    showError('Failed to save student');
+                }
+            });
+
+            document.getElementById('subjectForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    const subjectId = this.dataset.subjectId;
+                    if (subjectId) {
+                        await apiCall(`/subjects/${subjectId}/`, 'PUT', data);
+                        showSuccess('Subject updated successfully');
+                    } else {
+                        await apiCall('/subjects/', 'POST', data);
+                        showSuccess('Subject created successfully');
+                    }
+                    closeModal('subjectModal');
+                    loadSubjects();
+                } catch (error) {
+                    showError('Failed to save subject');
+                }
+            });
+
+            document.getElementById('enrollmentForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    await apiCall('/enrollments/', 'POST', data);
+                    showSuccess('Student enrolled successfully');
+                    closeModal('enrollmentModal');
+                    loadEnrollments();
+                } catch (error) {
+                    showError('Failed to enroll student');
+                }
+            });
+
+            document.getElementById('gradeForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    await apiCall('/grades/', 'POST', data);
+                    showSuccess('Grade Added successfully');
+                    closeModal('gradesModal');
+                    loadEnrollments();
+                } catch (error) {
+                    showError('Failed to add Grades');
+                }
+            });
+        }
+
+    </script>
